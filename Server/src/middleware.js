@@ -1,4 +1,6 @@
 const expressFormidable = require('express-formidable');
+
+//express-formidable middleware
 const options = {
     encoding: 'utf-8',
     uploadDir: '/',
@@ -6,6 +8,7 @@ const options = {
 };
 const expressFormidableMiddleware = expressFormidable(options);
 
+// logger middleware
 const loggerMiddleware = function (req, res, next) {
     console.log("\n======================================\n");
     console.log(`Request method : ${req.method}`);
@@ -15,7 +18,8 @@ const loggerMiddleware = function (req, res, next) {
     next();
 };
 
+// exports modules
 module.exports = {
     expressFormidableMiddleware,
-    loggerMiddleware,
+    loggerMiddleware
 };
