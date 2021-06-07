@@ -1,16 +1,8 @@
 const express = require('express');
 const router = require("./route");
-const {
-    expressFormidableMiddleware,
-    loggerMiddleware
-} = require("./middleware");
 
 //initializing app
 const app = express();
-
-//add middleware
-app.use(expressFormidableMiddleware);
-app.use(loggerMiddleware);
 
 // add router for app
 app.use(router);

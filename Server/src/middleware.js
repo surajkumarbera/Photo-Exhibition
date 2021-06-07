@@ -1,9 +1,10 @@
 const expressFormidable = require('express-formidable');
+const { IMAGEE_FILE_PATH } = require("./pathConstant");
 
 //express-formidable middleware
 const options = {
     encoding: 'utf-8',
-    uploadDir: '/',
+    uploadDir: IMAGEE_FILE_PATH,
     multiples: false,
 };
 const expressFormidableMiddleware = expressFormidable(options);

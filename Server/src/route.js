@@ -1,7 +1,17 @@
 const {Router} = require("express");
 const {HOME_PAGE_PATH} = require("./pathConstant");
+const {
+    expressFormidableMiddleware,
+    loggerMiddleware
+} = require("./middleware");
 
+// init router
 const router = Router();
+
+//add middleware
+router.use(expressFormidableMiddleware);
+router.use(loggerMiddleware);
+
 
 //                      app routers...
 /* ************************************************* */
@@ -32,20 +42,23 @@ router.get("/totalImageCount", (req, res) => {
 });
 
 // add a new image
-router.get("/addImage", (req, res) => {
-    // if(isReqValid(req)) {
+router.post("/addImage", (req, res) => {
+    // const title = req.fields["title"];
+    // const description = req.fields.description;
+    // const submittedBy = req.fields.submittedBy;
+    // const ImageFile = req.files;
+
+    // if(isReqValid(title, description, submittedBy, ImageFile)) {
     //     success head
-
-    //     title = req.fields.title;
-    //     description = req.fields.description;
-    //     submittedBy = req.fields.submittedBy;
-    //     ImageFile = req.files;
-
-    //     addImagetoList();
+    //     addImagetoList(title, description, submittedBy, ImageFile);
     // } else {
     //     error head
+    //     delete error img
     // }
-    res.send();
+    const { title, description, submittedBy } = req.fields;
+    const { img } = req.files;
+    console.log(req.fields);
+    res.send(/* head */"Success");
 });
 
 
