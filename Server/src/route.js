@@ -1,35 +1,54 @@
-const {
-    HOME_PAGE_PATH
-} = require("./pathConstant");
+const {Router} = require("express");
+const {HOME_PAGE_PATH} = require("./pathConstant");
 
-// GET: request for home page
-const serveHomepage = (req, res) => {
-    // serve home page
+const router = Router();
+
+//                      app routers...
+/* ************************************************* */
+
+// serve home page
+router.get("/", (req, res) => {
     res.sendFile(HOME_PAGE_PATH);
-};
+});
 
-// GET: request for img:id file 
-const serveImage = (req, res) => {
-    // serve the image of the requested image id 
-    res.send(req.url)
-};
+// serve about page
+router.get("/about", (req, res) => {
+    res.send("<h2>In development...</h2>");
+});
 
-//GET: request for total no of imgs
-const serveTotalImageCount = (req, res) => {
-    // server the total no of images
-    res.send(req.url)
-};
+// serve the image of the requested image id 
+router.get("/image:id", (req, res) => {
+    let imageID = req.params.id;
+    //const image = req.locals.gallery[imageID];
+    //res.sendFile(image.getPath());
+    res.send(String(imageID));
+});
 
-//POST: request to add an Image
-const addImage = (req, res) => {
-    // add a new image
-    res.send(req.url)
-};
+// server the total no of images
+router.get("/totalImageCount", (req, res) => {
+    //const length = req.locals.gallery.getLength();
+    //res.send(String(length));
+    res.send();
+});
+
+// add a new image
+router.get("/addImage", (req, res) => {
+    // if(isReqValid(req)) {
+    //     success head
+
+    //     title = req.fields.title;
+    //     description = req.fields.description;
+    //     submittedBy = req.fields.submittedBy;
+    //     ImageFile = req.files;
+
+    //     addImagetoList();
+    // } else {
+    //     error head
+    // }
+    res.send();
+});
+
+
 
 //export modules
-module.exports = {
-    serveHomepage,
-    serveImage,
-    serveTotalImageCount,
-    addImage
-}
+module.exports = router;

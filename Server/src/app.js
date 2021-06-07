@@ -1,14 +1,9 @@
 const express = require('express');
-const { 
-  expressFormidableMiddleware,
-  loggerMiddleware
-} = require("./middleware");
+const router = require("./route");
 const {
-  serveHomepage,
-  serveImage,
-  serveTotalImageCount,
-  addImage
-} = require("./route");
+    expressFormidableMiddleware,
+    loggerMiddleware
+} = require("./middleware");
 
 //initializing app
 const app = express();
@@ -17,11 +12,8 @@ const app = express();
 app.use(expressFormidableMiddleware);
 app.use(loggerMiddleware);
 
-// app routers
-app.get("/", serveHomepage);
-app.get("/image:id", serveImage);
-app.get("/totalImageCount", serveTotalImageCount);
-app.post("/addImage", addImage);
+// add router for app
+app.use(router);
 
 //export modules
 module.exports = app;
