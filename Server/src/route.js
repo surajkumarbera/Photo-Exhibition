@@ -1,9 +1,17 @@
-const {Router} = require("express");
-const {HOME_PAGE_PATH} = require("./pathConstant");
+const fs = require("fs");
+const { Router } = require("express");
+const { HOME_PAGE_PATH } = require("./pathConstant");
 const {
     expressFormidableMiddleware,
     loggerMiddleware
 } = require("./middleware");
+const {
+    getImage,
+    getTotalImageCount,
+    isReqValid,
+    addtoList,
+    deleteErrorImg
+} = require("./apputil");
 
 // init router
 const router = Router();
@@ -18,50 +26,50 @@ router.use(loggerMiddleware);
 
 // serve home page
 router.get("/", (req, res) => {
-    res.sendFile(HOME_PAGE_PATH);
-});
-
-// serve about page
-router.get("/about", (req, res) => {
-    res.send("<h2>In development...</h2>");
+    if(fs.existsSync(HOME_PAGE_PATH)) {
+        res.sendFile(HOME_PAGE_PATH);
+    } else {
+        //error head
+        res.sendStatus(404);
+    }
 });
 
 // serve the image of the requested image id 
 router.get("/image:id", (req, res) => {
-    let imageID = req.params.id;
-    //const image = req.locals.gallery[imageID];
-    //res.sendFile(image.getPath());
-    res.send(String(imageID));
+    const imageID = req.params.id;
+    const length = getTotalImageCount();
+    if(imageID >= 0  && imageID < length){
+        var image = getImage(imageID);
+        res.sendFile(image.path);
+    }else{
+        //error head
+        res.sendStatus(404);
+    }
 });
 
 // server the total no of images
 router.get("/totalImageCount", (req, res) => {
-    //const length = req.locals.gallery.getLength();
-    //res.send(String(length));
-    res.send();
+    const length = getTotalImageCount();
+    if(length !== undefined) {
+        res.send(String(length));
+    } else {
+        // err head
+        res.sendStatus(404);
+    }
 });
 
 // add a new image
 router.post("/addImage", (req, res) => {
-    // const title = req.fields["title"];
-    // const description = req.fields.description;
-    // const submittedBy = req.fields.submittedBy;
-    // const ImageFile = req.files;
-
-    // if(isReqValid(title, description, submittedBy, ImageFile)) {
-    //     success head
-    //     addImagetoList(title, description, submittedBy, ImageFile);
-    // } else {
-    //     error head
-    //     delete error img
-    // }
-    const { title, description, submittedBy } = req.fields;
-    const { img } = req.files;
-    console.log(req.fields);
-    res.send(/* head */"Success");
+    if(isReqValid(req.fields, req.files.imgFile)) {
+        //success head
+        addtoList(req.fields, req.files.imgFile);
+        res.sendStatus(200);
+    } else {
+        //error head
+        deleteErrorImg(req.files.imgFile);
+        res.sendStatus(404);
+    }
 });
-
-
 
 //export modules
 module.exports = router;
