@@ -10,34 +10,36 @@
 </head>
 
 <body>
+    <div id="exhibition">
+        <div id="Header">
+            <div id="appTitle">
+                <h1><u>PHOTO EXHIBITION</u></h1>
+            </div>
 
-    <div id="Header">
-        <div id="appTitle">
-            <h1>PHOTO EXHIBITION</h1>
-        </div>
-        
-        <div id="addImage">
-            <button onclick="ShowInputPanel()" id="addButton">ADD</button>
-            <div id="inputPanel" style="display: none;">
-                <form action="/addImage" method="post" enctype="multipart/form-data" id="uploadForm">
-                    <input type="text" name="title" id="title" placeholder="Title">
-                    <input type="text" name="description" id="description" placeholder="Description">
-                    <input type="text" name="submittedBy" id="submittedBy" placeholder="Submitted By">
-                    <input type="file" name="imgFile" id="imgFile">
-                    <input type="submit" value="Upload" onclick="uploadImage()">
-                </form>
-                <button onclick="HideInputPanel()" id="cancel">Cancel</button>
+            <div id="addImage">
+                <button onclick="ShowInputPanel()" id="addButton">ADD</button>
+                <div id="inputPanel" style="display: none;">
+                    <form action="/addImage" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <input type="text" name="title" id="title" placeholder="Title">
+                        <input type="text" name="description" id="description" placeholder="Description">
+                        <input type="text" name="submittedBy" id="submittedBy" placeholder="Submitted By">
+                        <input type="file" name="imgFile" id="imgFile">
+                        <input type="submit" value="Upload" style="color:darkblue; border-color: darkblue;">
+                    </form>
+                    <button onclick="HideInputPanel()" id="cancel">Cancel</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="uploadResult" style="display: none;">
-        <p id="msg"></p>
-        <button onclick="hidemsg()">OK</button>
-    </div>
+        <div id="uploadResult" style="display: none;">
+            <p id="msg"></p>
+            <button onclick="hidemsg()">OK</button>
+        </div>
 
-    <div id="body">
+        <div id="body">
+        </div>
     </div>
+    <div id="fullImg"></div>
 </body>
 
 <style>
@@ -51,8 +53,20 @@
     border: 4px solid gray;
 }
 
-#body img {
-    margin: 8px;
+figure {
+    width: fit-content;
+    margin: 5px;
+    border: 1px #cccccc solid;
+    padding: 4px;
+    display: inline-block;
+}
+
+figcaption {
+    background-color: black;
+    color: white;
+    font-style: italic;
+    padding: 2px;
+    text-align: center;
 }
 
 #uploadResult {
@@ -76,22 +90,23 @@
 }
 
 #inputPanel {
-    width: 700px;
-    height: auto;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.13);
+    margin: 30px;
 }
 
 #inputPanel input {
     display: block;
     width: 95%;
-    margin: 1%, 5%;
+    height: 40px;
+    margin: 1%;
 }
 
 #cancel {
     display: block;
     width: 95%;
-    margin: 20px, 5%;
+    height: 40px;
+    margin: 1%;
+    border-color: red;
+    color: red;
 }
 
 #Header {
@@ -119,6 +134,28 @@
 
 
 <script>
+    function showAcutalImg(id) {
+        document.getElementById("exhibition").style.display = "none";
+        
+        fullImg = document.getElementById("fullImg");
+        fullImg.style.display = "block";
+
+        fullImg.innerHTML = `
+        <button onclick="hideFullImg()" style = "display: block;">Back</button>\n
+        <img src=image${id} />`;
+
+    };
+
+    function hideFullImg() {
+        document.getElementById("exhibition").style.display = "block";
+        
+        fullImg = document.getElementById("fullImg");
+        fullImg.style.display = "none";
+
+        location.reload();
+        
+    }
+
     // show upload panel
     function ShowInputPanel() {
         document.getElementById("addButton").style.display = "none";
@@ -136,21 +173,36 @@
     };
 
     //fetch images
-    $.get("/totalImageCount", (data, status) => {
-        if (data > 0 && status == "success") {
-            const body = document.getElementById("body");
-            for (let i = 0; i < data; i++) {
-                var img = document.createElement("IMG");
-                img.src = "image" + i;
-                img.alt = "image" + i;
-                img.width = 450;
-                img.height = 450;
-                body.appendChild(img);
+    $.get("/totalImageCount", (length, status) => {
+        if (length > 0 && status == "success") {
+            for (let i = 0; i < length; i++) {
+                let url = "/imgInfo"+i;
+                $.get(url, (obj, status) => {
+                    if(status == "success"){
+                        let imgData = JSON.parse(obj.img);
+                        const body = document.getElementById("body");
+                        var img = document.createElement("IMG");
+                        img.src = "image" + i;
+                        img.alt = "image" + i;
+                        img.width = img.height = 425;
+                        img.setAttribute("onClick", `showAcutalImg(${i})`);
+                        var figureCaption = document.createElement("figcaption");
+                        figureCaption.innerText = `Title: ${imgData.title}\n
+                        Description: ${imgData.description}\n
+                        By: ${imgData.submittedBy}`;
+                        
+                        var figure = document.createElement("figure");
+                        figure.appendChild(img);
+                        figure.appendChild(figureCaption);
+                        body.appendChild(figure);
+                    }
+                });
             }
         }
     });
 
-    
+
+
     function showmsg(msgStr, c) {
         HideInputPanel();
         document.getElementById("addButton").style.display = "none";

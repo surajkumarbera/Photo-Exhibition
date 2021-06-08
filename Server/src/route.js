@@ -58,6 +58,27 @@ router.get("/totalImageCount", (req, res) => {
     }
 });
 
+//get particular Image information
+router.get("/imgInfo:id", (req, res) => {
+   console.log("I'm in...");
+   const imageID = req.params.id;
+   const length = getTotalImageCount();
+   if(imageID >= 0  && imageID < length){
+       var image = getImage(imageID);
+       let obj = {
+           title: image.getTitle(),
+           description: image.getDescription(),
+           submittedBy: image.getSubmittedBy()
+       }
+       let jsonStr = JSON.stringify(obj);
+
+       res.send({img: jsonStr});
+   }else{
+       //error head
+       res.sendStatus(404);
+   }
+});
+
 // add a new image
 router.post("/addImage", (req, res) => {
     if(isReqValid(req.fields, req.files.imgFile)) {
