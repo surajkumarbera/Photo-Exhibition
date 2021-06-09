@@ -1,5 +1,9 @@
 const express = require("express");
 const router = require("./route");
+const { checkConstants } = require("./apputil");
+
+//const dependency check
+checkConstants();
 
 //initializing app
 const app = express();

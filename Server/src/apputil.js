@@ -1,9 +1,12 @@
 const fs = require("fs");
 const Image = require("./Image");
+const pathConst = require("./pathConstant");
+
 const {
     getJSONObj,
     rewriteJSON
 } = require("./jsonHandeler");
+const { exit } = require("process");
 
 const getImage = (imageID) => {
     imgArray = getJSONObj();
@@ -51,11 +54,48 @@ const deleteErrorImg = (imgFiles) => {
     fs.unlinkSync(imgFiles.path);
 };
 
+//check Data files existence
+const checkConstants = () => {
+    if(!fs.existsSync(pathConst.HOME_PAGE_PATH)){
+        console.log(" :( Home Page missing.");
+        console.log(" :( Terminating process...");
+        exit(1);
+    } else {
+        console.log(" :) Home Page reachable...");
+    }
+
+    if(!fs.existsSync(pathConst.DATA_FOLDER_PATH)){
+        console.log(" :| Data Folder does not exists.");
+        fs.mkdirSync(pathConst.DATA_FOLDER_PATH);
+        console.log(" :) Data Folder CREATED...");
+    } else {
+        console.log(" :) Data Folder reachable...");
+    }
+
+    if(!fs.existsSync(pathConst.IMAGE_FOLDER_PATH)){
+        console.log(" :| Image Folder does not exists.");
+        fs.mkdirSync(pathConst.IMAGE_FOLDER_PATH);
+        console.log(" :) Image Folder CREATED...");
+    } else {
+        console.log(" :) Image Folder reachable...");
+    }
+
+    if(!fs.existsSync(pathConst.JSON_FILE_PATH)){
+        console.log(" :| JSON File does not exists.");
+        fs.writeFileSync(pathConst.JSON_FILE_PATH, "");
+        console.log(" :)JSON File CREATED...");
+    } else {
+        console.log(" :) JSON File reachable...");
+    }
+    
+};
+
 // export modules
 module.exports = {
     getImage,
     getTotalImageCount,
     isReqValid,
     addtoList,
-    deleteErrorImg
+    deleteErrorImg,
+    checkConstants
 };
